@@ -99,11 +99,11 @@
     <!-- MAIN DASHBOARD CONTAINER -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
 
-        <!-- LEFT & CENTER: Visualizers & Core Control (Span 2) -->
+        <!-- LEFT & CENTER: Visualizers & Interactive Controls -->
         <div class="lg:col-span-2 space-y-4 sm:space-y-6 flex flex-col">
 
             <!-- 1. Orbital Topology & Energy Grid Canvas View -->
-            <div class="glow-box bg-cyber-800/60 rounded-xl p-3 sm:p-5 relative overflow-hidden flex flex-col h-[300px] sm:h-[380px]">
+            <div class="glow-box bg-cyber-800/60 rounded-xl p-3 sm:p-5 relative overflow-hidden flex flex-col h-[280px] sm:h-[360px]">
                 <div class="flex items-center justify-between mb-3 z-10">
                     <div class="flex items-center space-x-2">
                         <i data-lucide="globe" class="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400"></i>
@@ -112,7 +112,7 @@
                     <div class="flex space-x-1.5 text-[10px] sm:text-xs">
                         <span class="px-2 py-0.5 bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 rounded flex items-center space-x-1">
                             <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                            <span>NODES: 1,024</span>
+                            <span>NODES: <span id="node-count-display">1,024</span></span>
                         </span>
                     </div>
                 </div>
@@ -125,23 +125,54 @@
                 </div>
             </div>
 
-            <!-- 2. Integrated 3-Pillar Control Panel -->
+            <!-- 2. Interactive Simulator Sliders -->
+            <div class="glow-box bg-cyber-800/60 rounded-xl p-3.5 sm:p-4 space-y-3">
+                <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                    <span class="font-orbitron text-xs font-bold text-cyan-300 flex items-center space-x-2">
+                        <i data-lucide="sliders" class="w-3.5 h-3.5 text-cyan-400"></i>
+                        <span>VALUATION SIMULATOR PARAMETERS</span>
+                    </span>
+                    <span class="text-[10px] text-gray-400">REALTIME MODELING</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <!-- Slider 1 -->
+                    <div>
+                        <div class="flex justify-between text-[11px] mb-1">
+                            <span class="text-gray-400">Orbital Constellation Scale:</span>
+                            <span class="text-cyan-300 font-bold" id="slider-nodes-val">1,024 Nodes</span>
+                        </div>
+                        <input type="range" id="slider-nodes" min="500" max="5000" value="1024" step="50" oninput="updateValuation()" class="w-full accent-cyan-400 bg-cyber-900 rounded h-1">
+                    </div>
+
+                    <!-- Slider 2 -->
+                    <div>
+                        <div class="flex justify-between text-[11px] mb-1">
+                            <span class="text-gray-400">SSPS Beam Capacity:</span>
+                            <span class="text-amber-300 font-bold" id="slider-power-val">128 TW</span>
+                        </div>
+                        <input type="range" id="slider-power" min="50" max="500" value="128" step="10" oninput="updateValuation()" class="w-full accent-amber-400 bg-cyber-900 rounded h-1">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Integrated 3-Pillar Control Panel -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 
                 <!-- Pillar 1 -->
-                <div class="glow-box bg-cyber-800/60 rounded-xl p-3.5 flex flex-col justify-between">
+                <div class="glow-box bg-cyber-800/60 rounded-xl p-3 flex flex-col justify-between">
                     <div>
-                        <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center justify-between mb-1">
                             <span class="text-[10px] font-bold text-amber-400 font-orbitron">01 // SSPS POWER</span>
                             <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
                         </div>
                         <h3 class="font-orbitron text-xs font-semibold mb-0.5">Wireless Beam Grid</h3>
-                        <p class="text-[11px] text-gray-400 mb-2">Direct microwave beaming to planetary mega-nodes.</p>
+                        <p class="text-[10px] text-gray-400 mb-2">Microwave beaming to mega-nodes.</p>
                     </div>
                     <div class="bg-cyber-900 p-2 rounded border border-amber-500/20">
-                        <div class="flex justify-between text-[11px] mb-1">
+                        <div class="flex justify-between text-[10px] mb-1">
                             <span class="text-gray-400">OUTPUT:</span>
-                            <span class="text-amber-300 font-bold">128.4 TW</span>
+                            <span class="text-amber-300 font-bold" id="pillar-power-display">128.4 TW</span>
                         </div>
                         <div class="w-full bg-gray-800 h-1 rounded overflow-hidden">
                             <div class="bg-amber-400 h-full w-4/5 animate-pulse"></div>
@@ -150,17 +181,17 @@
                 </div>
 
                 <!-- Pillar 2 -->
-                <div class="glow-danger bg-cyber-800/60 rounded-xl p-3.5 flex flex-col justify-between">
+                <div class="glow-danger bg-cyber-800/60 rounded-xl p-3 flex flex-col justify-between">
                     <div>
-                        <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center justify-between mb-1">
                             <span class="text-[10px] font-bold text-rose-400 font-orbitron">02 // DEFENSE</span>
                             <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-rose-400"></i>
                         </div>
                         <h3 class="font-orbitron text-xs font-semibold mb-0.5">Anti-Tamper Shield</h3>
-                        <p class="text-[11px] text-gray-400 mb-2">Autonomous kinetic/EMP evasion & counter-intercept.</p>
+                        <p class="text-[10px] text-gray-400 mb-2">EMP evasion & counter-intercept.</p>
                     </div>
                     <div class="bg-cyber-900 p-2 rounded border border-rose-500/20">
-                        <div class="flex justify-between text-[11px] mb-1">
+                        <div class="flex justify-between text-[10px] mb-1">
                             <span class="text-gray-400">THREATS:</span>
                             <span class="text-rose-400 font-bold">0 NEUTRALIZED</span>
                         </div>
@@ -171,17 +202,17 @@
                 </div>
 
                 <!-- Pillar 3 -->
-                <div class="glow-box bg-cyber-800/60 rounded-xl p-3.5 flex flex-col justify-between">
+                <div class="glow-box bg-cyber-800/60 rounded-xl p-3 flex flex-col justify-between">
                     <div>
-                        <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center justify-between mb-1">
                             <span class="text-[10px] font-bold text-cyan-400 font-orbitron">03 // M2M LEDGER</span>
                             <i data-lucide="cpu" class="w-3.5 h-3.5 text-cyan-400"></i>
                         </div>
                         <h3 class="font-orbitron text-xs font-semibold mb-0.5">Autonomous AI Ledger</h3>
-                        <p class="text-[11px] text-gray-400 mb-2">Instantaneous machine-to-machine micropayments.</p>
+                        <p class="text-[10px] text-gray-400 mb-2">Machine-to-machine micropayments.</p>
                     </div>
                     <div class="bg-cyber-900 p-2 rounded border border-cyan-500/20">
-                        <div class="flex justify-between text-[11px] mb-1">
+                        <div class="flex justify-between text-[10px] mb-1">
                             <span class="text-gray-400">TX / SEC:</span>
                             <span class="text-cyan-300 font-bold">14,289,102</span>
                         </div>
@@ -195,18 +226,22 @@
 
         </div>
 
-        <!-- RIGHT: Live M2M Transaction Feed & Valuation Stats -->
+        <!-- RIGHT: Valuation Stats & Live Stream -->
         <div class="space-y-4 sm:space-y-6 flex flex-col">
 
-            <!-- Valuation Box -->
+            <!-- Valuation Box (Responsive Font Fixed) -->
             <div class="glow-box bg-cyber-800/60 rounded-xl p-4 sm:p-5">
-                <h3 class="font-orbitron text-[11px] tracking-wider text-gray-400 mb-1">GLOBAL ASSET VALUATION</h3>
-                <div class="text-2xl sm:text-3xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-500 mb-2 break-all">
+                <h3 class="font-orbitron text-[10px] sm:text-[11px] tracking-wider text-gray-400 mb-1">GLOBAL ASSET VALUATION</h3>
+                
+                <!-- Fixed Font Scaling to Prevent Wrap -->
+                <div id="valuation-display" class="text-lg sm:text-2xl md:text-3xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-500 mb-2 whitespace-nowrap overflow-hidden text-ellipsis">
                     $128,000,000,000,000
                 </div>
-                <p class="text-[11px] text-gray-400 mb-3">
+
+                <p class="text-[10px] sm:text-[11px] text-gray-400 mb-3 leading-relaxed">
                     Absolute planetary sovereignty backbone. Equal to sovereign national budgets.
                 </p>
+
                 <div class="space-y-1.5 text-xs font-mono">
                     <div class="flex justify-between py-1 border-b border-gray-800">
                         <span class="text-gray-400">Bidders:</span>
@@ -214,7 +249,7 @@
                     </div>
                     <div class="flex justify-between py-1 border-b border-gray-800">
                         <span class="text-gray-400">Daily Cashflow:</span>
-                        <span class="text-emerald-400 font-bold">+$14.2B / day</span>
+                        <span class="text-emerald-400 font-bold" id="daily-cashflow-display">+$14.2B / day</span>
                     </div>
                     <div class="flex justify-between py-1">
                         <span class="text-gray-400">Monopoly:</span>
@@ -233,7 +268,7 @@
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                 </div>
                 
-                <div id="tx-stream" class="flex-1 space-y-2 overflow-y-auto max-h-[260px] sm:max-h-[300px] text-[11px] font-mono pr-1">
+                <div id="tx-stream" class="flex-1 space-y-2 overflow-y-auto max-h-[240px] sm:max-h-[280px] text-[10px] sm:text-[11px] font-mono pr-1">
                     <!-- Dynamic transactions -->
                 </div>
             </div>
@@ -261,8 +296,8 @@
             <div class="space-y-3 mb-5 text-xs">
                 <div class="p-3 bg-cyber-900 rounded-lg border border-cyan-500/20">
                     <span class="text-[10px] text-gray-400 block mb-1">SELECTED ASSET BUNDLE:</span>
-                    <strong class="font-orbitron text-cyan-300 text-xs sm:text-sm">NEXUS-ORBIT Space-Grid Complete Monopoly</strong>
-                    <div class="text-[11px] text-amber-400 mt-1">Price: $128 Trillion (Or 50-Year Planetary Concession)</div>
+                    <strong class="font-orbitron text-cyan-300 text-xs sm:text-sm">NEXUS-ORBIT Space-Grid Monopoly</strong>
+                    <div class="text-[11px] text-amber-400 mt-1" id="modal-price-display">Price: $128 Trillion (Or 50-Year Planetary Concession)</div>
                 </div>
 
                 <div class="space-y-1.5">
@@ -272,14 +307,6 @@
                         <option>Global Big Tech AI Consortium (MSFT/GOOG/AAPL/NVDA)</option>
                         <option>Middle East Sovereign AI Fund (PIF Coalition)</option>
                     </select>
-                </div>
-
-                <div class="space-y-1.5">
-                    <label class="text-[11px] text-gray-400 block font-mono">TRANSFER METHOD:</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button class="bg-cyan-950 border border-cyan-500/50 text-cyan-300 py-2 rounded text-[11px] font-mono font-bold hover:bg-cyan-900">FULL BUYOUT</button>
-                        <button class="bg-cyber-900 border border-gray-700 text-gray-300 py-2 rounded text-[11px] font-mono hover:border-cyan-500/30">CONCESSION</button>
-                    </div>
                 </div>
             </div>
 
@@ -297,6 +324,7 @@
     <script>
         lucide.createIcons();
 
+        // Canvas Simulation
         const canvas = document.getElementById('orbitCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -307,13 +335,17 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        const nodes = Array.from({ length: 25 }, () => ({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            vx: (Math.random() - 0.5) * 0.6,
-            vy: (Math.random() - 0.5) * 0.6,
-            radius: Math.random() * 1.5 + 1
-        }));
+        let nodes = [];
+        function initNodes(count) {
+            nodes = Array.from({ length: Math.min(count / 30, 60) }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.6,
+                vy: (Math.random() - 0.5) * 0.6,
+                radius: Math.random() * 1.5 + 1
+            }));
+        }
+        initNodes(1024);
 
         function drawOrbit() {
             ctx.fillStyle = 'rgba(3, 7, 18, 0.25)';
@@ -342,42 +374,4 @@
                 ctx.fill();
 
                 for (let j = i + 1; j < nodes.length; j++) {
-                    const dx = nodes[j].x - node.x;
-                    const dy = nodes[j].y - node.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 75) {
-                        ctx.strokeStyle = `rgba(0, 242, 254, ${1 - dist / 75})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.beginPath();
-                        ctx.moveTo(node.x, node.y);
-                        ctx.lineTo(nodes[j].x, nodes[j].y);
-                        ctx.stroke();
-                    }
-                }
-            });
-
-            requestAnimationFrame(drawOrbit);
-        }
-        drawOrbit();
-
-        const txStream = document.getElementById('tx-stream');
-        const headerRevenue = document.getElementById('header-revenue');
-        let currentRev = 48291044209;
-
-        const agents = ['AI-Agent-Alpha', 'Neural-Core-EU', 'Sovereign-Node-7', 'Autonomous-Fleet', 'Quantum-Ledger'];
-        const actions = ['Compute Lease', 'SSPS Power Transfer', 'ZK-Proof Verify', 'Micro-Pay Settlement', 'Bio-Sync'];
-
-        function addTransaction() {
-            const agent = agents[Math.floor(Math.random() * agents.length)];
-            const action = actions[Math.floor(Math.random() * actions.length)];
-            const amount = (Math.random() * 50000 + 1200).toFixed(2);
-            
-            currentRev += Math.floor(amount);
-            headerRevenue.textContent = '$' + currentRev.toLocaleString();
-
-            const item = document.createElement('div');
-            item.className = 'p-2 bg-cyber-900 rounded border border-cyan-500/10 flex justify-between items-center';
-            item.innerHTML = `
-                <div>
-                    <span class="text-cyan-400 font-bold">[${agent}]</span>
-                    <span c
+                    const dx = nodes[j].x - nod
